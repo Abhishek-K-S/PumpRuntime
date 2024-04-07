@@ -1,5 +1,6 @@
+#include <ArduinoWebsockets.h>
+
 #include <WiFi.h>
-#include <HTTPClient.h>
 
 const char* wifiSsid = "Kenaje_2.4G ext";
 const char* wifiPass = "kenaje@1819";
@@ -64,11 +65,15 @@ void setup() {
 
   WiFi.begin(wifiSsid, wifiPass);
   connectToWifi();
+
+  client.connect(server);
+  client.ping();
 }
 
 void loop() {
   // put your main code here, to run repeatedly:
   connectToWifi();
+  client.poll();
 
   int readValue = digitalRead(inputPin);
   float analogValue = analogRead(inputPin);
@@ -83,10 +88,10 @@ void loop() {
     //if prev also high, just ping
     if(previousState){
 //      do ping
-      getRequest(pingApi);
+      sendEvent(pingApi);
     }
     else{
-      getRequest(startApi);
+      sendEvent(startApi);
     }
     previousState = true;
     //if prev is low, send start
@@ -95,7 +100,7 @@ void loop() {
     //if prev was high, just send stop
     if(previousState){
 //      hit stop api
-      getRequest(stopApi);
+      sendEvent(stopApi);
     }
     previousState = false;
   }

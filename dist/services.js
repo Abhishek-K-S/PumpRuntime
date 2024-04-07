@@ -12,27 +12,23 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.limitter = exports.authHandler = exports.getHistory = exports.getActiveRuntimes = exports.stopHandler = exports.pingHandler = exports.startHandler = void 0;
 const network_1 = require("./network");
 const db_1 = require("./db");
-const startHandler = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+const startHandler = (user_id) => __awaiter(void 0, void 0, void 0, function* () {
     // await createEntry(req.user_id);
-    yield stopExisting(req.user_id);
-    network_1.network.ACTIVE.set(req.user_id, { start_at: new Date().getTime(), last_ping: new Date().getTime() });
-    startOrUpdateTimeout(req.user_id);
-    res.status(200).send('ok');
+    yield stopExisting(user_id);
+    network_1.network.ACTIVE.set(user_id, { start_at: new Date().getTime(), last_ping: new Date().getTime() });
+    startOrUpdateTimeout(user_id);
 });
 exports.startHandler = startHandler;
-const pingHandler = (req, res) => {
-    startOrUpdateTimeout(req.user_id);
-    res.status(200).send('ok');
+const pingHandler = (user_id) => {
+    startOrUpdateTimeout(user_id);
 };
 exports.pingHandler = pingHandler;
-const stopHandler = (req, res) => {
-    const { user_id } = req;
+const stopHandler = (user_id) => {
     if (network_1.network.TIMEOUTS_LIST.has(user_id)) {
         clearTimeout(network_1.network.TIMEOUTS_LIST.get(user_id));
         network_1.network.TIMEOUTS_LIST.delete(user_id);
     }
-    stopExisting(req.user_id);
-    res.status(200).send('ok');
+    stopExisting(user_id);
 };
 exports.stopHandler = stopHandler;
 const getActiveRuntimes = (req, res) => {
@@ -99,8 +95,7 @@ const getHistory = (req, res) => __awaiter(void 0, void 0, void 0, function* () 
     res.status(500).send('Error while fetching the info');
 });
 exports.getHistory = getHistory;
-const authHandler = (req, res, next) => {
-    const auth = req.headers.authorization;
+const authHandler = (auth) => {
     console.log(auth);
     if (auth) {
         let index = network_1.network.ALLOWED_AUTHS.findIndex((value) => value == auth);
@@ -112,7 +107,7 @@ const authHandler = (req, res, next) => {
             return;
         }
     }
-    res.status(200).send('Not authorised');
+    return null;
 };
 exports.authHandler = authHandler;
 let isAllowed = true;

@@ -2,27 +2,23 @@ import { Request, Response, NextFunction } from "express"
 import { network } from "./network";
 import { createEntry, getEntries } from "./db";
 
-export const startHandler = async (req:Request, res:Response) => {
+export const startHandler = async (user_id: number) => {
     // await createEntry(req.user_id);
-    await stopExisting(req.user_id);
-    network.ACTIVE.set(req.user_id, {start_at: new Date().getTime(), last_ping: new Date().getTime()})
-    startOrUpdateTimeout(req.user_id)
-    res.status(200).send('ok');
+    await stopExisting(user_id);
+    network.ACTIVE.set(user_id, {start_at: new Date().getTime(), last_ping: new Date().getTime()})
+    startOrUpdateTimeout(user_id)
 }
 
-export const pingHandler = (req:Request, res:Response) => {
-    startOrUpdateTimeout(req.user_id);
-    res.status(200).send('ok')
+export const pingHandler = (user_id: number) => {
+    startOrUpdateTimeout(user_id);
 }
 
-export const stopHandler = (req:Request, res:Response) => {
-    const {user_id} = req;
+export const stopHandler = (user_id: number) => {
     if(network.TIMEOUTS_LIST.has(user_id)){
         clearTimeout(network.TIMEOUTS_LIST.get(user_id));
         network.TIMEOUTS_LIST.delete(user_id);
     }
-    stopExisting(req.user_id);
-    res.status(200).send('ok');
+    stopExisting(user_id);
 }
 
 export const getActiveRuntimes = (req:Request, res:Response) => {
@@ -91,8 +87,7 @@ export const getHistory = async (req: Request, res: Response) => {
     
 }
 
-export const authHandler = (req:Request, res:Response, next: NextFunction) => {
-    const auth = req.headers.authorization
+export const authHandler = (auth: string) => {
     console.log(auth)
     
     if(auth){
@@ -106,7 +101,7 @@ export const authHandler = (req:Request, res:Response, next: NextFunction) => {
         }
     }
 
-    res.status(200).send('Not authorised');
+    return null;
 } 
 
 let isAllowed = true;
