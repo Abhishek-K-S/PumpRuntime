@@ -1,0 +1,14 @@
+start api
+
+ping api
+
+stop api
+
+
+dont throw any error
+
+keep track of running services
+
+ping every 5 services
+
+if not pinged for 20 sec, make it stopped

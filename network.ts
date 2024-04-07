@@ -1,0 +1,34 @@
+import { config } from "dotenv";
+
+export const network:Network = {
+    ALLOWED_AUTHS : [],
+    TIMEOUT: 10000,
+    ACTIVE: new Map(),
+    TIMEOUTS_LIST: new Map(),
+    DELETE_LIMIT: 60 * 24 * 60 * 60* 1000
+}
+
+type Network = {
+    ALLOWED_AUTHS : string[],
+    TIMEOUT: number,
+    ACTIVE: Map<number, Update>,
+    TIMEOUTS_LIST: Map<number, NodeJS.Timeout>,
+    DELETE_LIMIT: number
+}
+
+type Update = {
+    start_at: number,
+    last_ping: number
+}
+
+export const configure = () => {
+    config();
+    network.ALLOWED_AUTHS = process.env.ALLOWED_AUTHS?.split(',') || [],
+    process.env.TZ = 'Asia/Kolkata';
+}
+
+export const markActive = (user_id:number, row_index:number) => {
+    if(network.ACTIVE.has(user_id)){
+        
+    }
+}
