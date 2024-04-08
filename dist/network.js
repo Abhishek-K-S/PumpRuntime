@@ -1,6 +1,6 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.markActive = exports.configure = exports.network = void 0;
+exports.configure = exports.network = void 0;
 const dotenv_1 = require("dotenv");
 exports.network = {
     ALLOWED_AUTHS: [],
@@ -16,8 +16,3 @@ const configure = () => {
         process.env.TZ = 'Asia/Kolkata';
 };
 exports.configure = configure;
-const markActive = (user_id, row_index) => {
-    if (exports.network.ACTIVE.has(user_id)) {
-    }
-};
-exports.markActive = markActive;

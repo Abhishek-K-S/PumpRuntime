@@ -42,7 +42,7 @@ const toPromise = (fn, statement) => {
 db.run(`CREATE TABLE IF NOT EXISTS ${dbName} (id INTEGER PRIMARY KEY, user INTEGER, start INTEGER, stop INTEGER)`);
 const sqlCreate = toPromise('run', `INSERT INTO ${dbName}(user, start, stop) VALUES (?, ?, ?)`);
 const sqlUpdate = toPromise('run', `UPDATE ${dbName} SET stop=?`);
-const sqlSelect = toPromise('all', `SELECT * FROM ${dbName} ORDER BY start DESC LIMIT ? OFFSET ? `);
+const sqlSelect = toPromise('all', `SELECT * FROM ${dbName} WHERE user=? ORDER BY start DESC LIMIT ? OFFSET ? `);
 const sqlDelete = toPromise('run', `DELETE FROM ${dbName} WHERE start < ?`);
 const createEntry = (user_id, start, end) => __awaiter(void 0, void 0, void 0, function* () {
     const res = yield sqlCreate([user_id, start, end]);
@@ -53,8 +53,8 @@ const stopEntry = (rowIndex) => __awaiter(void 0, void 0, void 0, function* () {
     yield sqlUpdate([new Date().getTime()]).catch();
 });
 exports.stopEntry = stopEntry;
-const getEntries = (count, offset) => __awaiter(void 0, void 0, void 0, function* () {
-    const res = yield sqlSelect([count, offset]);
+const getEntries = (count, offset, user) => __awaiter(void 0, void 0, void 0, function* () {
+    const res = yield sqlSelect([user, count, offset]);
     // console.log(res, count, offset);
     return res['result'];
 });

@@ -15,10 +15,10 @@ import { deleteCron } from './cron';
 configure();
 require('./db')
 
-cors({credentials: true, origin: '*'})
 
 const app: Express = express();
 const port = process.env.PORT;
+app.use(cors({ origin: '*'}))
 
 app.get('/',  async (req: Request, res: Response) => {
   res.send(`Server is up: System time is ${new Date()}`);

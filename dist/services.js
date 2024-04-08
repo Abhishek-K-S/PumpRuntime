@@ -69,26 +69,29 @@ const stopExisting = (user_id) => __awaiter(void 0, void 0, void 0, function* ()
     if (network_1.network.ACTIVE.has(user_id)) {
         console.log('Stopped ------', user_id);
         const runtime = network_1.network.ACTIVE.get(user_id);
-        if (runtime.start_at + 2000 < runtime.last_ping)
+        if (runtime.start_at + 10000 < runtime.last_ping)
             yield (0, db_1.createEntry)(user_id, runtime.start_at, runtime.last_ping);
         network_1.network.ACTIVE.delete(user_id);
     }
 });
 const getHistory = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     try {
-        let { count, offset } = req.query;
+        let { count, offset, device } = req.query;
         if (typeof count === 'undefined')
             count = '20';
         if (typeof offset === 'undefined')
             offset = '0';
-        if (typeof count === 'string' && typeof offset === 'string') {
+        if (typeof count === 'string' && typeof offset === 'string' && typeof device === 'string') {
             const parsedCount = parseInt(count);
             const parsedOffset = parseInt(offset);
-            const actualOffset = Math.abs(parsedOffset);
-            const actualCount = Math.min(Math.abs(parsedCount), 50);
-            const result = yield (0, db_1.getEntries)(actualCount, actualOffset);
-            res.status(200).send(result);
-            return;
+            const parsedDevice = Math.abs(parseInt(device));
+            if (parsedDevice < network_1.network.ALLOWED_AUTHS.length) {
+                const actualOffset = Math.abs(parsedOffset);
+                const actualCount = Math.min(Math.abs(parsedCount), 50);
+                const result = yield (0, db_1.getEntries)(actualCount, actualOffset, parsedDevice);
+                res.status(200).send(result);
+                return;
+            }
         }
     }
     catch (e) {
@@ -104,6 +107,7 @@ const authHandler = (req, res, next) => {
         console.log(index);
         if (index >= 0) {
             req.user_id = index;
+            console.log(req.url);
             next();
             return;
         }
@@ -117,7 +121,7 @@ const limitter = (req, res, next) => {
     if (isAllowed) {
         isAllowed = false;
         next();
-        setTimeout(() => isAllowed = true, 800);
+        setTimeout(() => isAllowed = true, 500);
     }
     else
         res.status(500).send('Not allowed');

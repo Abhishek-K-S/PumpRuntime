@@ -13,6 +13,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 const express_1 = __importDefault(require("express"));
+const cors_1 = __importDefault(require("cors"));
 const network_1 = require("./network");
 const services_1 = require("./services");
 const cron_1 = require("./cron");
@@ -20,6 +21,7 @@ const cron_1 = require("./cron");
 require('./db');
 const app = (0, express_1.default)();
 const port = process.env.PORT;
+app.use((0, cors_1.default)({ origin: '*' }));
 app.get('/', (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     res.send(`Server is up: System time is ${new Date()}`);
 }));
