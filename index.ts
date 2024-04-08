@@ -1,4 +1,5 @@
 import express, { Express, Request, Response } from 'express';
+import cors from 'cors'
 
 declare global{
   namespace Express{
@@ -13,6 +14,8 @@ import { authHandler, getActiveRuntimes, getHistory, limitter, pingHandler, star
 import { deleteCron } from './cron';
 configure();
 require('./db')
+
+cors({credentials: true, origin: '*'})
 
 const app: Express = express();
 const port = process.env.PORT;

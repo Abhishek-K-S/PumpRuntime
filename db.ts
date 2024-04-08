@@ -31,7 +31,7 @@ db.run(`CREATE TABLE IF NOT EXISTS ${dbName} (id INTEGER PRIMARY KEY, user INTEG
 
 const sqlCreate = toPromise('run', `INSERT INTO ${dbName}(user, start, stop) VALUES (?, ?, ?)`);
 const sqlUpdate = toPromise('run', `UPDATE ${dbName} SET stop=?`);
-const sqlSelect = toPromise('all', `SELECT * FROM ${dbName} ORDER BY start DESC LIMIT ? OFFSET ? `);
+const sqlSelect = toPromise('all', `SELECT * FROM ${dbName} WHERE user=? ORDER BY start DESC LIMIT ? OFFSET ? `);
 const sqlDelete = toPromise('run', `DELETE FROM ${dbName} WHERE start < ?`);
 
 export const createEntry = async (user_id: number, start: number, end: number) => {
@@ -43,8 +43,8 @@ export const stopEntry = async (rowIndex: number) => {
     await sqlUpdate([new Date().getTime()]).catch();
 }
 
-export const getEntries = async (count:number, offset:number) => {
-    const res = await sqlSelect([count, offset]);
+export const getEntries = async (count:number, offset:number, user: number) => {
+    const res = await sqlSelect([user, count, offset]);
     // console.log(res, count, offset);
     return (res as object)['result'] ;
 }

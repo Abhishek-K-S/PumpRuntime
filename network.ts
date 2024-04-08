@@ -26,9 +26,3 @@ export const configure = () => {
     network.ALLOWED_AUTHS = process.env.ALLOWED_AUTHS?.split(',') || [],
     process.env.TZ = 'Asia/Kolkata';
 }
-
-export const markActive = (user_id:number, row_index:number) => {
-    if(network.ACTIVE.has(user_id)){
-        
-    }
-}
