@@ -4,7 +4,7 @@
 const char* wifiSsid = "Kenaje_2.4G";
 const char* wifiPass = "kenaje@1819";
 
-const char* servers[] = {"http://192.168.101.50:9999", "http://192.168.101.11:9999"};
+const char* servers = "http://192.168.101.50:9999";
 const int serversCount = 2;
 const char* auth = "eyJlbWFpbCI6ImFiaGlzaGVrLmtzQGZyaW5rcy5haSIsInBob25lX251bWJlciI6Ijk0ODI2MzYxOTEiLCJpYXQiOjE3MTA4MzI4MTksImV4cCI6MTcxMTI2NDgxOSwiYXVkIjoiMjc1IiwiaXNzIjoiRnJpbmtzIn0";
 
@@ -19,24 +19,22 @@ const String stopApi = "/stop";
 HTTPClient http;
 
 void getRequest(String url){
-  for(int i = 0; i<serversCount; i++){
-    http.begin(String(servers[i])+url);
-    http.addHeader("Authorization", auth);
+  http.begin(servers+url);
+  http.addHeader("Authorization", auth);
 
-    int httpCode = http.GET(); // Make the GET request
-    if (httpCode > 0) {
-      Serial.print(servers[i]); // Print the response payload
-      Serial.print(url);
-      Serial.print(" Success");
-      Serial.println();
-    } else {
-      Serial.print(servers[i]); // Print the response payload
-      Serial.print(url);
-      Serial.print(" Failed");
-      Serial.println();
-    }
-    http.end();
+  int httpCode = http.GET(); // Make the GET request
+  if (httpCode > 0) {
+    Serial.print(servers); // Print the response payload
+    Serial.print(url);
+    Serial.print(" Success");
+    Serial.println();
+  } else {
+    Serial.print(servers); // Print the response payload
+    Serial.print(url);
+    Serial.print(" Failed");
+    Serial.println();
   }
+  http.end();
 }
 
 void connectToWifi(){
