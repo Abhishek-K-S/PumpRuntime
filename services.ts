@@ -115,7 +115,7 @@ export const limitter = (req: Request, res: Response, next: NextFunction) => {
     if(isAllowed){
         isAllowed = false;
         next()
-        setTimeout(()=>isAllowed = true, 500);
+        setTimeout(()=>isAllowed = true, 50);
     }
     else res.status(500).send('Not allowed');
 }
