@@ -18,7 +18,7 @@ require('./db')
 
 const app: Express = express();
 const port = process.env.PORT;
-app.use(cors({ origin: ['http://192.168.101.50', 'http://192.168.101.11'],credentials: true}))
+app.use(cors({ origin: ['http://192.168.101.50:5173', 'http://192.168.101.11:5173'],credentials: true}))
 
 app.get('/',  async (req: Request, res: Response) => {
   res.send(`Server is up: System time is ${new Date()}`);
