@@ -1,7 +1,7 @@
 #include <WiFi.h>
 #include <HTTPClient.h>
 
-const char* wifiSsid = "Kenaje_2.4G";
+const char* wifiSsid = "Kenaje_2.4G ext";
 const char* wifiPass = "kenaje@1819";
 
 const char* servers = "http://192.168.101.50:9999";

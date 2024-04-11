@@ -61,7 +61,7 @@ const stopExisting = async (user_id: number) => {
     if(network.ACTIVE.has(user_id)){
         console.log('Stopped ------', user_id)
         const runtime = network.ACTIVE.get(user_id);
-        if(runtime.start_at + 12000 <  runtime.last_ping)
+        if(runtime.start_at + 30000 <  runtime.last_ping)
             await createEntry(user_id, runtime.start_at, runtime.last_ping)
         network.ACTIVE.delete(user_id);
     }
