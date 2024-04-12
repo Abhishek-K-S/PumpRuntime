@@ -11,7 +11,7 @@ declare global{
 
 import { configure, network } from './network';
 import { authHandler, getActiveRuntimes, getHistory, limitter, pingHandler, startHandler, stopHandler } from './services';
-import { deleteCron } from './cron';
+import { deleteCron, updateCron } from './cron';
 configure();
 require('./db')
 
@@ -33,5 +33,6 @@ app.get('/active', limitter, getActiveRuntimes)
 app.listen(port, () => {
   console.log(`⚡️[server]: Server is running at http://localhost:${port}`);
   deleteCron.start();
+  updateCron.start();
 });
 

@@ -5,7 +5,8 @@ export const network:Network = {
     TIMEOUT: 10000,
     ACTIVE: new Map(),
     TIMEOUTS_LIST: new Map(),
-    DELETE_LIMIT: 60 * 24 * 60 * 60* 1000
+    DELETE_LIMIT: 60 * 24 * 60 * 60* 1000,
+    ONLINE: ""
 }
 
 type Network = {
@@ -14,9 +15,10 @@ type Network = {
     ACTIVE: Map<number, Update>,
     TIMEOUTS_LIST: Map<number, NodeJS.Timeout>,
     DELETE_LIMIT: number
+    ONLINE: string
 }
 
-type Update = {
+export type Update = {
     start_at: number,
     last_ping: number
 }
@@ -25,4 +27,5 @@ export const configure = () => {
     config();
     network.ALLOWED_AUTHS = process.env.ALLOWED_AUTHS?.split(',') || [],
     process.env.TZ = 'Asia/Kolkata';
+    network.ONLINE = process.env.ONLINE
 }

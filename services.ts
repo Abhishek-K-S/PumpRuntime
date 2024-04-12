@@ -1,6 +1,7 @@
 import { Request, Response, NextFunction } from "express"
 import { network } from "./network";
 import { createEntry, getEntries } from "./db";
+import { onlineStart, onlineStop } from "./onlineApi";
 
 export const startHandler = async (req:Request, res:Response) => {
     // await createEntry(req.user_id);
@@ -8,6 +9,7 @@ export const startHandler = async (req:Request, res:Response) => {
     network.ACTIVE.set(req.user_id, {start_at: new Date().getTime(), last_ping: new Date().getTime()})
     startOrUpdateTimeout(req.user_id)
     res.status(200).send('ok');
+    onlineStart(req.user_id);
 }
 
 export const pingHandler = (req:Request, res:Response) => {
@@ -61,9 +63,11 @@ const stopExisting = async (user_id: number) => {
     if(network.ACTIVE.has(user_id)){
         console.log('Stopped ------', user_id)
         const runtime = network.ACTIVE.get(user_id);
-        if(runtime.start_at + 30000 <  runtime.last_ping)
-            await createEntry(user_id, runtime.start_at, runtime.last_ping)
         network.ACTIVE.delete(user_id);
+        if(runtime.start_at + 30000 <  runtime.last_ping){
+            await createEntry(user_id, runtime.start_at, runtime.last_ping)
+            onlineStop(user_id, runtime);
+        }
     }
 } 
 
