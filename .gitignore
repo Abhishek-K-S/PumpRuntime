@@ -1,3 +1,4 @@
 node_modules
 Database.db
 .env
+dist
