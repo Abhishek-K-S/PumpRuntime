@@ -10,7 +10,7 @@ declare global{
 }
 
 import { configure, network } from './network';
-import { authHandler, getActiveRuntimes, getHistory, limitter, pingHandler, startHandler, stopHandler } from './services';
+import { authHandler, getActiveRuntimes, getHistory, limitter, makeDbEntry, startHandler, stopHandler } from './services';
 import { deleteCron } from './cron';
 configure();
 require('./db')
@@ -18,17 +18,18 @@ require('./db')
 
 const app: Express = express();
 const port = process.env.PORT;
-app.use(cors({ origin: ['http://192.168.101.50:5173', 'http://192.168.101.11:5173'],credentials: true}))
+app.use(cors({ origin: ['https://pumpui.onrender.com'],credentials: true}))
 
 app.get('/',  async (req: Request, res: Response) => {
   res.send(`Server is up: System time is ${new Date()}`);
 });
 
 app.get('/start', authHandler, startHandler);
-app.get('/ping', authHandler, pingHandler);
-app.get('/stop', authHandler, stopHandler);
+app.post('/stop', authHandler, stopHandler);
 app.get('/history', limitter, getHistory)
 app.get('/active', limitter, getActiveRuntimes)
+app.post('/entry', authHandler, makeDbEntry)
+
 
 app.listen(port, () => {
   console.log(`⚡️[server]: Server is running at http://localhost:${port}`);

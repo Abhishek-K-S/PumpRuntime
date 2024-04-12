@@ -1,27 +1,20 @@
 import { Request, Response, NextFunction } from "express"
-import { network } from "./network";
+import { ActiveType, Update, network } from "./network";
 import { createEntry, getEntries } from "./db";
 
 export const startHandler = async (req:Request, res:Response) => {
-    // await createEntry(req.user_id);
-    await stopExisting(req.user_id);
+    stopExisting(req.user_id);
     network.ACTIVE.set(req.user_id, {start_at: new Date().getTime(), last_ping: new Date().getTime()})
-    startOrUpdateTimeout(req.user_id)
     res.status(200).send('ok');
-}
-
-export const pingHandler = (req:Request, res:Response) => {
-    startOrUpdateTimeout(req.user_id);
-    res.status(200).send('ok')
 }
 
 export const stopHandler = (req:Request, res:Response) => {
     const {user_id} = req;
-    if(network.TIMEOUTS_LIST.has(user_id)){
-        clearTimeout(network.TIMEOUTS_LIST.get(user_id));
-        network.TIMEOUTS_LIST.delete(user_id);
+    const body = req.body as Update
+    if(body){
+        stopExisting(user_id);
+        createEntry(user_id, body.start_at, body.last_ping);
     }
-    stopExisting(req.user_id);
     res.status(200).send('ok');
 }
 
@@ -43,29 +36,12 @@ export const getActiveRuntimes = (req:Request, res:Response) => {
     res.status(500).send('Not found');
 }
 
-const startOrUpdateTimeout = (user_id: number) => {
-    if(network.TIMEOUTS_LIST.has(user_id)){
-        clearTimeout(network.TIMEOUTS_LIST.get(user_id))
-    }
-    if(network.ACTIVE.has(user_id)){
-        const timeout = setTimeout(() => {
-            stopExisting(user_id);
-        }, network.TIMEOUT);
-        network.TIMEOUTS_LIST.set(user_id, timeout);
-        network.ACTIVE.get(user_id).last_ping = new Date().getTime();
-
-    }
-}
-
-const stopExisting = async (user_id: number) => {
+const stopExisting = (user_id: number) => {
     if(network.ACTIVE.has(user_id)){
         console.log('Stopped ------', user_id)
-        const runtime = network.ACTIVE.get(user_id);
-        if(runtime.start_at + 30000 <  runtime.last_ping)
-            await createEntry(user_id, runtime.start_at, runtime.last_ping)
         network.ACTIVE.delete(user_id);
     }
-} 
+}
 
 export const getHistory = async (req: Request, res: Response) => {
     try{
@@ -88,7 +64,6 @@ export const getHistory = async (req: Request, res: Response) => {
     catch(e){
     }
     res.status(500).send('Error while fetching the info')
-    
 }
 
 export const authHandler = (req:Request, res:Response, next: NextFunction) => {
@@ -107,7 +82,7 @@ export const authHandler = (req:Request, res:Response, next: NextFunction) => {
     }
 
     res.status(200).send('Not authorised');
-} 
+}
 
 let isAllowed = true;
 export const limitter = (req: Request, res: Response, next: NextFunction) => {
@@ -118,4 +93,20 @@ export const limitter = (req: Request, res: Response, next: NextFunction) => {
         setTimeout(()=>isAllowed = true, 50);
     }
     else res.status(500).send('Not allowed');
+}
+
+export const makeDbEntry = (req: Request, res: Response) => {
+    try{
+        const user_id = req.user_id;
+        const body = req.body as Update[];
+        if(Array.isArray(body)){
+            body.forEach(async entry=>{
+                createEntry(user_id, entry.start_at, entry.last_ping);
+            })
+        }
+        res.status(200).send('ok');
+    }
+    catch(e){
+        res.status(500).send('Not ok');
+    }
 }

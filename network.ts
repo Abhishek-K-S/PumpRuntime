@@ -11,15 +11,17 @@ export const network:Network = {
 type Network = {
     ALLOWED_AUTHS : string[],
     TIMEOUT: number,
-    ACTIVE: Map<number, Update>,
+    ACTIVE: ActiveType,
     TIMEOUTS_LIST: Map<number, NodeJS.Timeout>,
     DELETE_LIMIT: number
 }
 
-type Update = {
+export type Update = {
     start_at: number,
     last_ping: number
 }
+
+export type ActiveType = Map<number, Update>
 
 export const configure = () => {
     config();

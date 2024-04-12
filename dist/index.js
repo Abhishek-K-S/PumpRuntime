@@ -21,15 +21,15 @@ const cron_1 = require("./cron");
 require('./db');
 const app = (0, express_1.default)();
 const port = process.env.PORT;
-app.use((0, cors_1.default)({ origin: '*' }));
+app.use((0, cors_1.default)({ origin: ['https://pumpui.onrender.com'], credentials: true }));
 app.get('/', (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     res.send(`Server is up: System time is ${new Date()}`);
 }));
 app.get('/start', services_1.authHandler, services_1.startHandler);
-app.get('/ping', services_1.authHandler, services_1.pingHandler);
-app.get('/stop', services_1.authHandler, services_1.stopHandler);
+app.post('/stop', services_1.authHandler, services_1.stopHandler);
 app.get('/history', services_1.limitter, services_1.getHistory);
 app.get('/active', services_1.limitter, services_1.getActiveRuntimes);
+app.post('/entry', services_1.authHandler, services_1.makeDbEntry);
 app.listen(port, () => {
     console.log(`⚡️[server]: Server is running at http://localhost:${port}`);
     cron_1.deleteCron.start();
